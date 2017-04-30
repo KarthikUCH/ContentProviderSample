@@ -3,6 +3,7 @@ package contentprovidersample.raju.karthi.con.contentprovidersample.database;
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -56,6 +57,7 @@ public class DbContentProvider extends ContentProvider {
         SQLiteQueryBuilder builder = getQueryBuilder(uri);
 
         Cursor cursor = builder.query(mDB,projection, selection, selectionArgs, null, null, sortOrder);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
@@ -104,7 +106,19 @@ public class DbContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        long newRowId = mDB.insertOrThrow(DbConstants.TBL_ITEMS, null, values);
+        notifyChange(uri);
+        return uri;
+    }
+
+    /**
+     * Notifies the system that the given {@code uri} data has changed.
+     */
+    private void notifyChange(Uri uri) {
+        Context context = getContext();
+        if (context != null) {
+            context.getContentResolver().notifyChange(uri, null);
+        }
     }
 
     @Override

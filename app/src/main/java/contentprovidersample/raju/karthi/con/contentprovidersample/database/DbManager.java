@@ -1,10 +1,12 @@
 package contentprovidersample.raju.karthi.con.contentprovidersample.database;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -74,12 +76,15 @@ public class DbManager {
         }
     }
 
+    //////////////////////////////////////////////////////////
+    //////////////////// DIRECT DB ACCESS ////////////////////
+    //////////////////////////////////////////////////////////
     /**
      *
      * @param item
-     * @return the umber of affected rows
+     * @return the number of affected rows
      */
-    public void insertItems(String item) throws NullPointerException
+    /*public void insertItems(String item) throws NullPointerException
     {
         ContentValues cv= new ContentValues();
 
@@ -101,6 +106,22 @@ public class DbManager {
 
         c.close();
         return items;
+    }*/
+
+
+    //////////////////////////////////////////////////////////
+    /////////// DB ACCESS THROUGH CONTENT PROVIDER ///////////
+    //////////////////////////////////////////////////////////
+
+
+    public Uri providerInsertItems(String item) throws NullPointerException
+    {
+        ContentValues cv= new ContentValues();
+
+        cv.put(DbConstants.COL_ITEM_NAME, item);
+        cv.put(DbConstants.COL_ITEM_BORROWER, item+" borrower");
+
+        return mContext.getContentResolver().insert(DbContract.Items.CONTENT_URI, cv);
     }
 
     @Override
