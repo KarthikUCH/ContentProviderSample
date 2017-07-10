@@ -34,8 +34,7 @@ public class DbManager {
         mDbHelper = new DatabaseHelper(context).getWritableDatabase();
     }
 
-    public SQLiteDatabase getDbHelper()
-    {
+    public SQLiteDatabase getDbHelper() {
         return mDbHelper;
     }
 
@@ -79,8 +78,8 @@ public class DbManager {
     //////////////////////////////////////////////////////////
     //////////////////// DIRECT DB ACCESS ////////////////////
     //////////////////////////////////////////////////////////
+
     /**
-     *
      * @param item
      * @return the number of affected rows
      */
@@ -112,21 +111,18 @@ public class DbManager {
     //////////////////////////////////////////////////////////
     /////////// DB ACCESS THROUGH CONTENT PROVIDER ///////////
     //////////////////////////////////////////////////////////
-
-
-    public Uri providerInsertItems(String item) throws NullPointerException
-    {
-        ContentValues cv= new ContentValues();
+    public Uri providerInsertItems(String item) throws NullPointerException {
+        ContentValues cv = new ContentValues();
 
         cv.put(DbConstants.COL_ITEM_NAME, item);
-        cv.put(DbConstants.COL_ITEM_BORROWER, item+" borrower");
+        cv.put(DbConstants.COL_ITEM_BORROWER, item + " borrower");
 
         return mContext.getContentResolver().insert(DbContract.Items.CONTENT_URI, cv);
     }
 
     @Override
     protected void finalize() throws Throwable {
-        if(null != mDbHelper)
+        if (null != mDbHelper)
             mDbHelper.close();
         super.finalize();
     }

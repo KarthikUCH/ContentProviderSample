@@ -2,11 +2,13 @@ package contentprovidersample.raju.karthi.con.contentprovidersample.database;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -106,9 +108,33 @@ public class DbContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        long newRowId = mDB.insertOrThrow(DbConstants.TBL_ITEMS, null, values);
-        notifyChange(uri);
-        return uri;
+        switch (sUriMatcher.match(uri)){
+            case ITEM_LIST:
+                long newRowId = mDB.insertOrThrow(DbConstants.TBL_ITEMS, null, values);
+                notifyChange(uri);
+                return uri;
+
+            default:
+                return null;
+        }
+
+    }
+
+    /**
+     * Append optional id with URI and notify the change
+     * @param id
+     * @param uri
+     * @return
+     */
+    private Uri getUriForId(long id, Uri uri) {
+        if (id > 0) {
+            Uri itemUri = ContentUris.withAppendedId(uri, id);
+            notifyChange(itemUri);
+            return itemUri;
+        }
+        // s.th. went wrong:
+        throw new SQLException(
+                "Problem while inserting into uri: " + uri);
     }
 
     /**
